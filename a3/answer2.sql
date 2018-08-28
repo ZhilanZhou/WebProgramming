@@ -1,0 +1,1 @@
+SELECT `first`, `last` FROM `ProfessorName` WHERE `idP` Not in (SELECT `idP` FROM `Course` WHERE `semester` LIKE 'S%%')

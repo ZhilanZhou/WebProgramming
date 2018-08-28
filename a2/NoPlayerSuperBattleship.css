@@ -1,0 +1,19 @@
+#map_panel {
+    width: 70%;
+    float:left;
+}
+
+#map_view {
+    height: 800px;
+}
+
+#p2_view {
+    display: none;
+}
+
+#event_log {
+    width:30%;
+    height: 800px;
+    float: right;
+    overflow: auto;
+}

@@ -1,0 +1,79 @@
+body{
+    font-family: "Lucida Console", monospace;
+    background-color: black;
+    color: #12B225;
+}
+
+h1{
+    padding-left: 30%;
+}
+
+#map_panel {
+    width: 100%;
+    clear: both;
+}
+
+#p1_view {
+    width: 80%;
+    float:left;
+}
+
+#move_ship{
+    width: 20%;
+    float:right;
+    font-size: 12px;
+}
+
+#p1_cli_output{
+    width: 20%;
+    float:right;
+    font-family: "Lucida Console", monospace;
+    height: 500px;
+    overflow:scroll;
+}
+
+#p1_view td{
+    width:7px;
+    height:7px;
+    border: 0.5px solid #969696;
+}
+
+#p1_view td.miss{
+    background-color: dimgray;
+}
+
+#p1_view td.invisible{
+    background-color: #02550C;
+}
+
+#p1_view td.p1{
+    background-color: #1f7ce8;
+}
+
+#p1_view td.empty{
+    background-color: #A7ECAF;
+}
+
+#p1_view td.hit{
+    background-color: #E62117;
+}
+
+#move{
+    width: auto;
+    float: right;
+    font-size: 20px;
+}
+
+#ship{
+    font-family: "Lucida Console", monospace;
+    font-size: 12px;
+}
+
+#action{
+    font-family: "Lucida Console", monospace;
+    font-size: 12px;
+}
+
+#p1_cli_output{
+    font-size: 10px;
+}

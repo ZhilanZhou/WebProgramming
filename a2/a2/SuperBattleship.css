@@ -1,0 +1,63 @@
+body{
+    font-family: "broadway", fantasy;
+}
+
+#map_panel {
+    width: 100%;
+    float: left;
+}
+
+#p1_view {
+    width: 80%;
+    float:left;
+}
+
+#move_ship{
+    width: 20%;
+    float:right;
+}
+
+#cli_panel {
+    position: relative;
+}
+
+#p1_cli_panel {
+    position: relative;
+}
+
+#p1_cli_input {
+    width: 100%;
+}
+
+#p1_cli_output {
+    position: relative;
+    height: 80%;
+    overflow: auto;
+}
+
+#p1_view td{
+    width:15px;
+    height:15px;
+    border: 1px solid #969696;
+}
+
+
+#p1_view td.miss{
+    background-color: dimgray;
+}
+
+#p1_view td.invisible{
+    background-color: #abb8ef;
+}
+
+#p1_view td.p1{
+    background-color: black;
+}
+
+#p1_view td.empty{
+    background-color: #7186e0;
+}
+
+#p1_view td.hit{
+    background-color: crimson;
+}

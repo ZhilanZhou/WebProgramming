@@ -1,0 +1,1 @@
+SELECT COUNT(idS) FROM `StudentCourse` WHERE `idC` = ( SELECT `idC` FROM `Course` WHERE `name` = 'COMP 426' )

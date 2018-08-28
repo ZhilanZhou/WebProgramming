@@ -1,0 +1,22 @@
+﻿StudentName:
+first (varchar)
+last (varchar)
+idS (smallint) PRIMARY KEY
+
+ProfessorName:
+first (varchar)
+last (varchar)
+idP (smallint) PRIMARY KEY
+
+Course:
+name (varchar)
+semester (varchar)
+section (varchar)
+idP (smallint) FOREIGN KEY REFERENCES ProfessorName(idP)
+examDate (varchar)
+idC (smallint) PRIMARY KEY
+
+StudentCourse:
+idS (smallint) FOREIGN KEY REFERENCES StudentName(idS)
+idC (smallint) FOREIGN KEY REFERENCES Course(idC)
+idSC (smallint) PRIMARY KEY

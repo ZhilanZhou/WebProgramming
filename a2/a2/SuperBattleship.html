@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html> <head>
+<title>One Player Super Battleship</title>
+<script
+src="http://www.cs.unc.edu/Courses/comp426-f16/jquery-3.1.0.js"></script>
+<script src="SBConstants.js"></script>
+<script src="SuperBattleship.js"></script>
+<script src="SBPlayer.js"></script>
+<script src="DumbAI.js"></script>
+<script src="SBboard.js"></script>
+<link rel="stylesheet" type="text/css" href="SuperBattleship.css">
+</head>
+
+<body>
+    
+<div><h1>SuperBattleship</h1></div>
+    
+<div id="map_panel">
+  <div id="map_view">
+    <div id="p1_view">P1 View</div>
+    <div id="move_ship">
+      <form action="">
+          <select name="ships">
+              <option value="carrier">Carrier</option>
+              <option value="battleship">Battleship</option>
+              <option value="cruiser">Cruiser</option>
+              <option value="submarine">Submarine</option>
+              <option value="destroyer">Destroyer</option>
+          </select>
+          <select name="action">
+              <option value="forward">Move Forward</option>
+              <option value="backward">Move Backward</option>
+              <option value="clockwise">Rotate Clockwise</option>
+              <option value="counterclockwise">Rotate Counterclockwise</option>
+          </select>
+        </form>
+    </div>
+  </div>
+</div>
+  
+</body> </html>

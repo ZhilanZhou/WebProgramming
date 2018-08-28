@@ -1,0 +1,295 @@
+
+The SuperBattleship API is contained in two files: SBConstants.js and SuperBattleship.js.
+In your HTML file, you should include them in that order like this:
+
+<script
+src="http://www.cs.unc.edu/Courses/comp426-f16/kmp/SuperBattleship/SBConstants.js">
+</script>
+
+<script
+src="http://www.cs.unc.edu/Courses/comp426-f16/kmp/SuperBattleship/SuperBattleship.js">
+</script>
+
+
+The file SBConstants.js defines a global object called SBConstants. The properties
+of this object act as named constants that are used by the game. These property
+names are in ALL_CAPITALS_WITH_UNDERSCORES. In this documentation, anywhere you
+see a value in that form, I am referring to a property of this object. I will omit
+the necessary prefix "SBConstants." for readability, but your code will need to
+include the prefix in order to access the value.
+
+SBConstants also defines as properties several helper functions for dealing
+with orientation which you might find useful. Read the comments in SBConstants.js for
+details.
+
+To create a new instance of the game, use the constructor function SuperBattleship
+like this:
+
+var game = new SuperBattleship();
+
+Without an argument, the new game will be configured with default values
+specifying the size of the board, the number, sizes, and names of ships
+in each player's fleet, the turn limit before a draw is declared, the number
+of active misses that a ship can rotate through, and how far behind itself
+a ship can "see".
+
+If you provide an argument to the constructor, it will be interpreted as
+an object providing non-default values for these configuration options.
+See the comment at the top of SuperBattleship.js for details.
+
+SuperBattleship is event driven which means you need to install event
+handlers with the game in order to be informed of game updates. Register
+event handlers with the method registerEventHandler as in:
+
+game.registerEventHandler(event_type, handler);
+
+This method expects two arguments. The first is the type of event that you
+want the handler to handle and can be one of:
+
+TURN_CHANGE_EVENT
+HIT_EVENT
+MISS_EVENT
+SHIP_SUNK_EVENT
+GAME_OVER_EVENT
+
+The names of these events should be fairly self-explanatory. Note that a
+hit or miss event caused by the actions of a player
+will be published before the turn change event signaling that the turn
+is over. Similarly, a hit event that causes a ship to be sunk will be
+published before the associated ship sunk event. Once a game over event
+is published, no further events will be generated.
+
+Additionally you can specify the value ALL_EVENTS if you want the handler
+to be invoked for any kind of event.
+
+When any of these events occurs, the function object provided as the value
+of the second parameter (i.e., handler), will be called. When called, an
+"event object" will be provided as the first parameter. The properties of this
+event object are specific to the event type, but all event objects will have
+the following two properties in common:
+
+event_object.event_type
+event_object.game
+
+The event_type property will be the specific event type for the event that occurred (i.e.,
+one of the values above). The game property will be a reference to the game
+object that generated the event.
+
+In addition to these common properties, the event object will have other properties
+that are specific to the event type. These are listed below:
+
+For TURN_CHANGE_EVENT:
+    event_object.who
+	Set to either PLAYER_ONE or PLAYER_TWO to indicate whether or not
+	it is now player one's turn or player two's turn.
+	
+For HIT_EVENT:
+    event_object.ship
+	A reference to the ship object that was hit. Ship objects are described
+	below in the "Ship Objects" section.
+	
+    event_object.x 
+	The x-coordinate of the board space where the hit occured. 
+    event_object.y 
+	The y-coordinate of the board space where the hit occured. 
+	
+For MISS_EVENT:
+    event_object.x 
+	The x-coordinate of the board space where the miss occured. 
+    event_object.y 
+	The y-coordinate of the board space where the miss occured. 
+    event_object.expiration
+	The turn count when this miss will expire. See the section below
+	labeled "Misses and Hits" for more information about this value.
+    	
+SHIP_SUNK_EVENT
+    event_object.ship
+	A reference to the ship object that was sunk.
+	
+GAME_OVER_EVENT
+    event_object.winner
+	Either PLAYER_ONE or PLAYER_TWO if either was the winner,
+	or DRAW if the turn limit was reached without a winner.
+
+In addition to the event mechanism for delivering game events, the
+game object has a public API with the following methods defined. Some
+of these methods require a "key" which is unique to a player and
+is provide by the game object when a player registers. See the
+"Game Lifecycle" section below for more details.
+
+game.getStatus()
+	Returns that status of the game as one of the following
+	values: REGISTERING_PLAYERS, PLAYER_ONE, PLAYER_TWO, or FINISHED.
+	See the "Game Lifecycle" section below for more details.
+
+game.isPlayerOneKey(k)
+game.isPlayerTwoKey(k)
+	These methods will take a "key" value and indicate whether it
+	is the player one key or player two key. 
+
+game.getBoardSize()
+	Returns the side length of the board as an integer. The board
+	is square. Each space on the board is addressed as an (X,Y) coordinate
+	pair with values running from 0 to getBoardSize()-1.
+
+game.normalizeX(x)
+game.normalizeY(y)
+	Normalizes the values x and y with respect to board size. This allows
+	you to convert negative indices and/or indices that are greater than
+	boardSize and properly normalize them to the range 0 to boardSize-1.
+
+game.getTurnCount()
+	Returns the current value of the turn count.
+
+game.getTurnLimit()
+	Returns the turn limit when the game will be declared a draw.
+
+game.getRearViewDistance()
+	Returns the distance that ships can see to the rear. See the
+	"Ships" section below for details.
+
+game.registerPlayerOne()
+game.registerPlayerTwo()
+	Methods for registering as player one or player two. The return
+	value is the key required to access player specific API functionality.
+
+game.startGame()
+	Starts the game if both players have already been registered.
+
+game.getPlayerOneFleet()
+game.getPlayerTwoFleet()
+	Returns an array of ship objects associated with a specific player.
+
+game.getFleetByKey(k)
+	Given a player key, returns an array of ship objects associated
+	with that key.
+
+The following API methods all require a key value as the first parameter.
+The key must match the key associated with the player whose turn it currently is.
+If it does not match, these methods return false and have no effect on the game.
+If successful, these methods return true and the game will generate the appropriate
+events as a result of the action taken culminating in either a turn change event
+or possibly a game over event.
+
+game.shootAt(key, x, y)
+	Attempts to shoot at the board square (x,y). 
+
+game.moveShipForward(key, ship)
+game.moveShipBackward(key, ship)
+	Attempts to move the ship object provided as the second parameter
+	forward/backward one square. If this action can not be taken for any reason
+	(most likely because the square needed is occupied by an unexpired
+	miss or another ship), returns false with no effect on the game.
+
+game.rotateShipCW(key, ship)
+game.rotateShipCCW(key, ship)
+       Attemps to rotate the ship object provided as the second parameter
+       either clockwise (CW) or counter-clockwise (CCW). If this action can
+       not be taken for any reason (most likely because the space required
+       is occupied by another ship and/or too many active misses), returns
+       false with no effect on the game.
+
+game.getShipByName(key, ship_name)
+       Returns the ship object given the ship's name from the fleet associated
+       with the player key provided. Does not constitute a turn and can be
+       called at any time regardless of whose turn it is.
+
+game.queryLocation(key, x, y)
+       Returns an object describing the state of the specified (x,y) location
+       on the board. The possible return values are described below. Does not
+       constitute a turn and can be called at any time. The key parameter is
+       required in order to determine visibility with respect to a particular
+       player. The return value will be a simple object in one of the following
+       forms (values in <>'s indicate place holders for specific appropriate
+       values that will be returned).
+
+       In the case of board square occupied by a non-expired (i.e., active) miss:
+       {type: "miss", expires: <expiration turn>}
+
+       In the case of a board square occupied by a segment of a ship 
+       associated with player one:
+       {type: "p1", ship: <ship object reference>,
+        segment: <segment index of ship>, state: <either BURNT or OK>}
+
+       In the case of a board square occupied by a segment of a ship 
+       associated with player two:
+       {type: "p2", ship: <ship object reference>,
+        segment: <segment index of ship>, state: <either BURNT or OK>}
+
+       In the case of a board square that is empty:
+       {type: "empty"}
+
+       In the case of a board square that is invisible (i.e., not within
+       the visible range of any ship in the player's fleet and not an active
+       miss or a segment of a sunk ship which are always visible):
+       {type: "invisible"}
+
+Game Lifecycle
+
+After the game object is created, it is in the REGISTERING_PLAYERS state until
+the methods registerPlayerOne() and registerPlayerTwo() are called. Each of these
+methods will generate and return a player key which can be used to take actions
+as that player.
+
+Once both players are registered, the game will be put into the PLAYER_ONE state
+and a turn change event will published indicating that it is player one's turn.
+
+The game remains in this state until an appropriate action (i.e., shootAt,
+moveShipForward, moveShipBackward, rotateShipCW, or rotateShipCCW) is successfully
+executed. At this point, the game will be put into the PLAYER_TWO state
+and a turn change event will be published.
+
+This repeats until either the turn limit is reached or all of the ships associated
+with a player are sunk. If this occurs, the game over event is generated and the
+game transitions to the FINISHED state.
+
+Ship Objects
+
+Ship objects have some methods that will only respond if the key associated with
+the player that owns the ship are provided and other methods that can be
+called by either player.
+
+The general methods that do not require a key include:
+
+ship.getName()	    Returns the name of the ship as a string.
+ship.getSize()	    Returns the size of the ship (i.e., the number of board
+		    spaces the ship occupies.
+ship.getOwner()	    Returns either PLAYER_ONE or PLAYER_TWO
+ship.isMine(k)	    Given a key, will indicate whether the ship belongs to the
+		    player associated with that key.
+ship.getStatus()    Returns either ALIVE or DEAD. If at least one segment of the
+		    ship is OK, then ALIVE, otherwise DEAD.
+
+The methods of a ship object that require the owner's key will return either
+null or undefined if the key does not match. Otherwise returns values as
+described below:
+
+ship.getPosition(key)
+	Returns a position object with the fields, x, y, and direction providing
+	the (x,y) location of the head of the ship and the direction the ship
+	is facing as one of: NORTH, EAST, SOUTH, or WEST.
+
+ship.occupies(key, x, y)
+        Returns either true or false if the ship occupies the specified
+	board position.
+
+ship.canSee(key, x, y)
+        Returns true or false if the ship is close enough to see the specified
+	board position. A ship can see up to it's size squares ahead of, to the
+	left of, or the right of itself and up to a game-configurable number of
+	squares behind itself.
+		
+Misses and Hits
+
+When a player shoots at a particular board square and misses, the board square
+is occupied by the miss for a game-configurable number of turns. Subsequent
+shots on the same square will advance the expiration further. While a miss is
+"active" (i.e., hasn't expired yet), no ship can occupy the square. Furthermore,
+a ship can only rotate through a game-configurable limited number of active misses.
+
+Active misses are always visible to both players regardless of where they are
+on the board (i.e., no matter if they are within sight of a ship or not).
+
+A hit on a ship segment causes that ship segment to be set to the BURNT state.
+Once all segments of a ship are hit, the ship is sunk. Sunk ships can not move
+or rotate and the squares that it occupies are always visible to both players.
